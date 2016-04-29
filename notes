@@ -1,0 +1,8 @@
+Ideas:
+
+- About 10 agents
+- About 4/5 items
+- Assume special case(s) of polynomial time computability - hierarchical, pairs/beachfront (not too complex)
+- First price for WDP
+- Hardcode the valuation functions for individual agents - we're comparing results, not creating them
+- Strategies will prolly be the hardest part
