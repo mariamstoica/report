@@ -15,3 +15,10 @@ Todo:
   - Steps outlined in that one pset 
 - Auction platform figures out prices
 - Stats --> utilities to everyone 
+
+How to Represent Bids/WDP
+- A bid looks like [(id, [list_of_items], bid), ...], with the bid representing your value on that combo.
+- The list_of_items can include dummy items (OR*)
+
+- The WDP concatenates all these bids into one array
+- Then, carry out the dynamic programming example - we have hierarchical bids
