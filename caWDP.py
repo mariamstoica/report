@@ -33,43 +33,70 @@ class caWDP:
 
 			return check
 
-		""" Basic idea - all the single bids will be valid, so we first 
-		test if any pairs work.  Then test triples, etc.  Max of 3 checks
-		(for now) since only 3 agents """
+		# """ Basic idea - all the single bids will be valid, so we first 
+		# test if any pairs work.  Then test triples, etc.  Max of 3 checks
+		# (for now) since only 3 agents """
 
-		allocation = max(bids, key = lambda b : b[2])
-		revenue = allocation[2]
+		""" Based on the size of bids, find all subsets of a fixed size, find the 
+		best allocation at that size, then continue upwards """
 
-		""" Now, if there are possible allowable pairs of bids, we pick the
-		best option """
+		allocation = []
+		revenue = 0
 
-		pair1 = [bids[0], bids[1]]
-		pair2 = [bids[0], bids[2]]
-		pair3 = [bids[1], bids[2]]
+		for i in range(1, len(bids)+1):
+			possible_groups = list(itertools.combinations(bids, i))
+			possible_group_lists = map(list, possible_groups)
 
-		allowable_pairs = filter(lambda a : allowable(a, capacities), [pair1, pair2, pair3])
+			allowable_groups = filter(lambda a : allowable(a, capacities), possible_group_lists)
 
-		random.shuffle(allowable_pairs)
+			random.shuffle(allowable_groups)
 
-		prices = [(0,0) for i in range(0, len(allowable_pairs))]
-		for i in range(0, len(allowable_pairs)):
-			prices[i] = (allowable_pairs[i][0][2] + allowable_pairs[i][1][2], i)
+			prices = [(0,0) for i in range(0, len(allowable_groups))]
+			for i in range(0, len(allowable_groups)):
+				prices[i] = (i, sum(b[2] for b in allowable_groups[i]))
 
-		best_price = max(prices, key = lambda p : p[0])
+			best_price = max(prices, key = lambda p : p[1])
 
-		best_pair = allowable_pairs[best_pair[1]]
-
-		# Break ties in favor of giving to more people
-		if best_price[0] >= revenue:
-			allocation = best_pair
-			revenue = best_price[0]
-
-		""" Finally, we check the triple """
-		if (allowable(bids, capacities)):
-			triple_price = sum(b[2] for b in bids)
-
-			if triple_price >= revenue:
-				allocation = bids
-				revenue = triple_price
+			#Break ties in favor of allocating more bids
+			if len(allocation) == 0 or best_price[1] >= revenue:
+				allocation = allowable_groups[best_price[0]]
+				revenue = best_price[1]
 
 		return allocation
+
+		# allocation = max(bids, key = lambda b : b[2])
+		# revenue = allocation[2]
+
+		# """ Now, if there are possible allowable pairs of bids, we pick the
+		# best option """
+
+		# pair1 = [bids[0], bids[1]]
+		# pair2 = [bids[0], bids[2]]
+		# pair3 = [bids[1], bids[2]]
+
+		# allowable_pairs = filter(lambda a : allowable(a, capacities), [pair1, pair2, pair3])
+
+		# random.shuffle(allowable_pairs)
+
+		# prices = [(0,0) for i in range(0, len(allowable_pairs))]
+		# for i in range(0, len(allowable_pairs)):
+		# 	prices[i] = (allowable_pairs[i][0][2] + allowable_pairs[i][1][2], i)
+
+		# best_price = max(prices, key = lambda p : p[0])
+
+		# best_pair = allowable_pairs[best_pair[1]]
+
+		# # Break ties in favor of giving to more people
+		# if best_price[0] >= revenue:
+		# 	allocation = best_pair
+		# 	revenue = best_price[0]
+
+		# """ Finally, we check the triple """
+		# if (allowable(bids, capacities)):
+		# 	triple_price = sum(b[2] for b in bids)
+
+		# 	if triple_price >= revenue:
+		# 		allocation = bids
+		# 		revenue = triple_price
+
+		# return allocation
