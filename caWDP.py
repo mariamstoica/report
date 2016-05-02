@@ -1,6 +1,7 @@
 # needs to get bids, capacities
 
 import random
+import itertools
 
 class caWDP:
 	""" Given the capacities of each resource and the bids on

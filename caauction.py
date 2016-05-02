@@ -21,6 +21,9 @@ from stats import Stats
 
 from util import argmax_index, shuffled, mean, stddev
 
+#Infinite string of zeros
+zeros = itertools.repeat(0)
+
 def sim(config):
 
 	agents = init_agents(config)
@@ -36,14 +39,93 @@ def sim(config):
     else:
         raise ValueError("mechanism must be one of 'caWDP' or 'VCG'")
 
+    allocation = {}
+    payments = {}
+    values = {}
+    bids = {}
 
+    history = History(bids, payments, n)
 
+    def total_spent(agent_id, end):
+        """
+        Compute total amount spent by agent_id through (not including)
+        round end.
+        """
+        s = 0
+        for t in range(end):
+            agent_payment_t = filter(lambda p : p[0] == agent_id, payments[t])
+         	s += agent_payment_t[1]
+        return s
 
+    def run_round(t):
+
+    	# Get the bids from the agents
+    	if t == 0:
+    		bids[t] = [a.initial_bid() for a in agents]
+		else:
+			bids[t] = [a.bid(t, history) for a in agents]
+
+		# Run the mechanism to determine allocation
+		allocation[t] = mechanism.compute(capacities, bids[t])
+
+		# Find the payment for each agent
+		payments[t] = []
+		for aid in agent_ids:
+			agent_allocation = filter(lambda b : b[0] == aid, allocation)
+			if len(agent_allocation) == 0:
+				payments[t].append((aid,0))
+			else:
+				payments[t].append((aid, sum(b[2] for b in agent_allocation)))
+
+		values[t] = dict(zip(agent_ids, zeros))
+
+		def agent_value(agent_id, allocation, payments):
+			agent_allocation = filter(lambda b : b[0] == agent_id, allocation)
+			agent_value = 0
+			if len(agent_allocation) > 0:
+				for choice in agent_allocation:
+					agent_value += by_id[agent_id].value[choice[1]]
+			agent_payment = filter(lambda p : p[0] == agent_id, payments)
+			values[t][agent_id] = agent_value - agent_payment[1]
+			return None
+
+		map(lambda a : agent_value(a, allocation[t], payments[t]), agent_ids)
+
+		log_console = False
+        if log_console:
+            logging.info("\t=== Round %d ===" % t)
+            logging.info("\tbids: %s" % bids[t])
+            logging.info("\tpayments: %s" % payments[t])
+            logging.info("\tallocation: %s" % allocation[t])
+            logging.info("\tUtility: %s" % values[t])
+            logging.info("\ttotals spent: %s" % [total_spent(a.id, t+1) for a in agents])
+
+    for t in range(0, config.num_rounds):
+    	run_round(t)
+
+    	for a in agents:
+    		history.set_agent_spent(a.id, total_spent(a.id, t))
+
+	for a in agents:
+		history.set_agent_spent(a.id, total_spent(a.id, config.num_rounds))
+
+	return history
+
+class Params:
+    def __init__(self):
+        self._init_keys = set(self.__dict__.keys())
+    
+    def add(self, k, v):
+        self.__dict__[k] = v
+
+    def __repr__(self):
+        return "; ".join("%s=%s" % (k, str(self.__dict__[k]))
+                         for k in self.__dict__.keys() if k not in self._init_keys)
 
 def init_agents(conf):
     """Each agent class must be already loaded, and have a
     constructor that takes an id, a value, and a budget, in that order."""
-#    params = [(0, 10, conf.budget), (1, 20, conf.budget), (2, 30, conf.budget)]
+#   params = [(0, 10, conf.budget), (1, 20, conf.budget), (2, 30, conf.budget)]
 
 #	This should look something like params = zip(range(n), value, demands)
     n = len(conf.agent_class_names)
