@@ -129,7 +129,7 @@ def init_agents(conf):
 
 #	This should look something like params = zip(range(n), value, demands)
     n = len(conf.agent_class_names)
-    params = zip(range(n), conf.agent_values, itertools.repeat(conf.budget))
+    params = zip(range(n), conf.agent_values)
     def load(class_name, params):
         agent_class = conf.agent_classes[class_name]
         return agent_class(*params)

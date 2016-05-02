@@ -179,7 +179,6 @@ class Params:
         return "; ".join("%s=%s" % (k, str(self.__dict__[k]))
                          for k in self.__dict__.keys() if k not in self._init_keys)
         
-
 def load_modules(agent_classes):
     """Each agent class must be in module class_name.lower().
     Returns a dictionary class_name->class"""
