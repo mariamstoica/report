@@ -1,12 +1,14 @@
 Ideas:
 
-- About 10 agents
-- About 4/5 items
+- We'll fit the strategies in the papers: m types of items, capacity c_j for j = 1, ..., m.
+- n agents.
+- Idea: 3 agents, 3 items, capacities near 3.
+- Compare strategies against truth
 - Assume special case(s) of polynomial time computability - hierarchical, pairs/beachfront (not too complex)
 - First price for WDP
 - Hardcode the valuation functions for individual agents - we're comparing results, not creating them
 - Strategies will prolly be the hardest part
-
+- Init_agents should be changed
 
 Todo: 
 - Start with representation of values OR*, OR, XOR, etc.
@@ -18,7 +20,14 @@ Todo:
 
 How to Represent Bids/WDP
 - A bid looks like [(id, [list_of_items], bid), ...], with the bid representing your value on that combo.
-- The list_of_items can include dummy items (OR*)
 
-- The WDP concatenates all these bids into one array
-- Then, carry out the dynamic programming example - we have hierarchical bids
+Questions:
+- How do we represent agent values?  We know how to initialize them (using random numbers, whatever), but where do we put them 
+  to make sure each agent has access?
+- Number of agents/resources - is 3ish valid?
+- Check on init_agents to make sure it's okay
+- What is Params?
+- Represent lack of knowledge for a bidder about other people's bids
+- General guidance
+
+
