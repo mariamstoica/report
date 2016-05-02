@@ -2,7 +2,7 @@
 
 import random
 
-class WDP:
+class caWDP:
 	""" Given the capacities of each resource and the bids on
 	the resources, this computes the winning set of bids 
 	and the prices each agent makes """

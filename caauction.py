@@ -21,6 +21,39 @@ from stats import Stats
 
 from util import argmax_index, shuffled, mean, stddev
 
+def sim(config):
+
+	agents = init_agents(config)
+
+	n = len(agents)
+    by_id = dict((a.id, a) for a in agents)
+    agent_ids = [a.id for a in agents]
+
+    if (config.mechanism.lower() == 'cawdp'):
+        mechanism = caWDP
+    elif config.mechanism.lower() == 'vcg':
+        mechanism = VCG
+    else:
+        raise ValueError("mechanism must be one of 'caWDP' or 'VCG'")
+
+
+
+
+
+def init_agents(conf):
+    """Each agent class must be already loaded, and have a
+    constructor that takes an id, a value, and a budget, in that order."""
+#    params = [(0, 10, conf.budget), (1, 20, conf.budget), (2, 30, conf.budget)]
+
+#	This should look something like params = zip(range(n), value, demands)
+    n = len(conf.agent_class_names)
+    params = zip(range(n), conf.agent_values, itertools.repeat(conf.budget))
+    def load(class_name, params):
+        agent_class = conf.agent_classes[class_name]
+        return agent_class(*params)
+
+    return map(load, conf.agent_class_names, params)
+
 def configure_logging(loglevel):
     numeric_level = getattr(logging, loglevel.upper(), None)
     if not isinstance(numeric_level, int):
@@ -59,16 +92,16 @@ def main(args):
                       help="Set the logging level: 'debug' or 'info'")
 
     parser.add_option("--mech",
-                      dest="mechanism", default="fp",
-                      help="Set the mechanim: 'fp' or 'vcg'")
+                      dest="mechanism", default="caWDP",
+                      help="Set the mechanim: 'caWDP' or 'vcg'")
 
     parser.add_option("--num-rounds",
                       dest="num_rounds", default=48, type="int",
                       help="Set number of rounds")
     
-    parser.add_option("--reserve",
-                      dest="reserve", default=0, type="int",
-                      help="Reserve price, in cents")
+    #parser.add_option("--reserve",
+    #                  dest="reserve", default=0, type="int",
+    #                  help="Reserve price, in cents")
 
 	#parser.add_option("--iters",
 	#                 dest="iters", default=1, type="int",
@@ -94,6 +127,10 @@ def main(args):
     options.agent_class_names = agents_to_run
     options.agent_classes = load_modules(options.agent_class_names)
 
+    # Need to have something here
+    options.demands = ?
+    options.capacities = ?
+
     logging.info("Starting simulation...")
     n = len(agents_to_run)
 
@@ -106,19 +143,20 @@ def main(args):
     logging.info("Time to Run the Simulation")
 
     total_rev = 0
-    ## Iterate over permutations
-    for vals in perms:
-        options.agent_values = list(vals)
-        values = dict(zip(range(n), list(vals)))
-        ##   Runs simulation  ###
-        history = sim(options)
-        ###  simulation ends.
-        stats = Stats(history, values)
-        # Print stats in console?
-        # logging.info(stats)
-        
-        for id in range(n):
-            totals[id] += stats.total_utility(id)
-            total_spent[id] += history.agents_spent[id]
-        total_rev += stats.total_revenue()
-    total_revenues.append(total_rev / float(num_perms))
+    
+    """ THIS IS WHERE WE HAVE A QUESTION - HOW DO WE REPRESENT INDIVIDUAL AGENT VALUES """
+    options.agent_values = list(vals)
+    values = dict(zip(range(n), list(vals)))
+    ##   Runs simulation  ###
+    history = sim(options)
+    ###  simulation ends.
+    stats = CAStats(history, values)
+    # Print stats in console?
+    # logging.info(stats)
+    
+    for id in range(n):
+        totals[id] += stats.total_utility(id)
+        total_spent[id] += history.agents_spent[id]
+    total_rev += stats.total_revenue()
+
+    #total_revenues.append(total_rev / float(num_perms))
