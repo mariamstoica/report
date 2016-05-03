@@ -239,7 +239,7 @@ def main(args):
 
     # Choose the demands, capacities, and values for each agent
 	options.agent_demands = [[2,3,2] for i in range(0, n)]
-	options.capacities = [6,9,6]
+	options.capacities = [20,27,20]
 	options.agent_values = []
 
 	for i in range(0, n):
@@ -268,9 +268,9 @@ def main(args):
 		logging.info("Stats for Agent %d, %s" % (a, agents_to_run[a]) )
 		logging.info("Average spend $%.2f" % (total_spent[a]/float(options.num_rounds)))   
 		logging.info("Average utility  $%.2f" % (totals[a]/float(options.num_rounds)))
-		logging.info("Total revenue $%.2f" % (total_rev))
 		logging.info("-" * 40)
 		logging.info("\n")
+	logging.info("Total revenue $%.2f" % (total_rev))
 #print "config", config.budget
     
     #for t in range(47, 48):
