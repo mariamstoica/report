@@ -79,7 +79,7 @@ class Adaptive:
 		else:
 			self.lose += 1
 
-		self.bidding_history.append((self.demands, self.bundle_value, self.pm, self.lose, win))
+		self.bidding_history.append((self.demands, self.bundle_value, self.pm[-1], self.lose, win))
 
 		if self.lose >= self.tau:
 			self.bidding_history = []
@@ -102,5 +102,7 @@ class Adaptive:
 			self.utility = u_expected
 
 			profit_margin_reset()
+
+			self.bidding_history = []
 
 		return (self.id, self.demands, (1-self.pm[-1])*self.bundle_value)
