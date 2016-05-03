@@ -36,13 +36,6 @@ class QLearn:
 		self.beta = 0.1
 		self.old_s = 0
 		self.old_a = 0
-		# self.psi = 3
-		# self.chi = 3
-		# self.delta = 1
-		# self.utility = 0
-		# self.profit_margin_history_center = 0
-		# self.reset_lower = 0
-		# self.reset_higher = 0
 
 	def initial_bid(self):
 		return (self.id, self.demands, (1-self.s[-1])*self.bundle_value)
