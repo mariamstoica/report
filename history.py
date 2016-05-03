@@ -12,6 +12,7 @@ class History:
             """Takes the info for a _single_ round."""
             self.bids = copy.deepcopy(bids)
             self.payments = copy.deepcopy(payments)
+            self.allocation = copy.deepcopy(allocation)
 
     def __init__(self, bids, payments, allocation, n_agents=5):
         self.round = lambda t: History.RoundHistory(

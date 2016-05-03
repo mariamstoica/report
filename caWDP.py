@@ -49,18 +49,19 @@ class caWDP:
 
 			allowable_groups = filter(lambda a : allowable(a, capacities), possible_group_lists)
 
-			random.shuffle(allowable_groups)
+			if len(allowable_groups) > 0:
+				random.shuffle(allowable_groups)
 
-			prices = [(0,0) for i in range(0, len(allowable_groups))]
-			for i in range(0, len(allowable_groups)):
-				prices[i] = (i, sum(b[2] for b in allowable_groups[i]))
+				prices = [(0,0) for i in range(0, len(allowable_groups))]
+				for i in range(0, len(allowable_groups)):
+					prices[i] = (i, sum(b[2] for b in allowable_groups[i]))
 
-			best_price = max(prices, key = lambda p : p[1])
+				best_price = max(prices, key = lambda p : p[1])
 
-			#Break ties in favor of allocating more bids
-			if len(allocation) == 0 or best_price[1] >= revenue:
-				allocation = allowable_groups[best_price[0]]
-				revenue = best_price[1]
+				#Break ties in favor of allocating more bids
+				if len(allocation) == 0 or best_price[1] >= revenue:
+					allocation = allowable_groups[best_price[0]]
+					revenue = best_price[1]
 
 		return allocation
 

@@ -13,8 +13,8 @@ class CAStats:
             round = self.history.round(t)
             agent_payment = 0
             for i in range(0, len(round.payments)):
-                if payments[i][0] == id:
-                    agent_payment = payments[i][1]
+                if round.payments[i][0] == id:
+                    agent_payment = round.payments[i][1]
 
             if agent_payment == 0:
                 return 0
@@ -22,7 +22,7 @@ class CAStats:
                 this_agent_bids = filter(lambda a : a[0] == id, round.allocation)
                 agent_value = 0
                 for bid in this_agent_bids:
-                    agent_value += sum([values[id][i]*bid[1][i] for i in range(0, len(bid[1]))])
+                    agent_value += sum([self.values[id][i]*bid[1][i] for i in range(0, len(bid[1]))])
                 return agent_value - agent_payment
 
             # if id not in round.occupants:
@@ -43,12 +43,13 @@ class CAStats:
         rev = 0
         def round_payment(allocation):
             payment = 0
-            map(lambda a: payment += a[2], allocation)
+            for i in range(0, len(allocation)):
+                payment += allocation[i][2]
             return payment
 
         for i in range(self.history.num_rounds()):
             r = self.history.round(i)
-            rev += sum(round_payment(r.allocation))
+            rev += round_payment(r.allocation)
         return rev
 
     def __repr__(self):

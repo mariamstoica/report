@@ -2,7 +2,7 @@
 
 import sys
 
-class Truthful:
+class FinalTruthful:
     """Truthful bidding"""
     def __init__(self, id, values, demands):
         self.id = id
@@ -13,7 +13,7 @@ class Truthful:
         return (self.id, self.demands, sum([self.values[i]*self.demands[i] for i in range(0, len(self.values))]))
 
     def bid(self, t, history):
-        return initial_bid(self)
+        return self.initial_bid()
 
 # class DerBoobb4:
 #     """Balanced bidding agent"""
