@@ -11,10 +11,10 @@ import pprint
 import random
 import sys
 
-from gsp import GSP
+from caWDP import caWDP
 from vcg import VCG
 from history import History
-from stats import Stats
+from castats import CAStats
 
 #from bbagent import BBAgent
 #from truthfulagent import TruthfulAgent
