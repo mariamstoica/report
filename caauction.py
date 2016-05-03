@@ -239,12 +239,12 @@ def main(args):
 
     # Choose the demands, capacities, and values for each agent
 	options.agent_demands = []
-	options.capacities = [20,27,20]
+	options.capacities = [20,27,20, 30, 25]
 	options.agent_values = []
 
 	for i in range(0, n):
-		options.agent_values.append([random.randint(3,6), random.randint(5,8), random.randint(6,11)])
-		options.agent_demands.append([random.randint(0,2), random.randint(0,3), random.randint(0,2)])
+		options.agent_values.append([random.randint(3,6), random.randint(5,8), random.randint(6,11), random.randint(4,7), random.randint(6,9)])
+		options.agent_demands.append([random.randint(0,2), random.randint(0,3), random.randint(0,2), random.randint(0,1), random.randint(0,3)])
     
 	""" Decide the agent values """
 	values = dict(zip(range(n), options.agent_values))
