@@ -2,7 +2,7 @@
 
 import sys
 
-class FinalTruthful:
+class FixedPM:
     """Truthful bidding"""
     def __init__(self, id, values, demands):
         self.id = id

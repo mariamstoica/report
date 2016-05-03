@@ -23,7 +23,7 @@ class QLearn:
 		self.rho = 5
 		self.s = [0,.05]
 		self.a = set([-.1, .1])
-		self.step_history = [.1]
+		self.step_history = [.1,.1]
 		self.step = .1
 		self.cutoff = .01
 		self.lamb = 10
@@ -85,30 +85,34 @@ class QLearn:
 			return s_star*frac
 
 		def compute_q(s, a, r_val, old):
-			if self.v[(s,a)] == 0:
+			if (s,a) not in self.v.keys():
 				return r_val
 			else:
 				Q_value_pairs = self.Q_values.keys()
 				if old:
-					theta_close = filter(lambda pair : abs(pair[0] - s) < self.theta, Q_value_pairs)
+					theta_close = filter(lambda pair : abs(pair[0] - s) < self.step, Q_value_pairs)
 				else:
-					theta_close = filter(lambda pair : abs(pair[0] - (s+a)) < self.theta, Q_value_pairs)
+					theta_close = filter(lambda pair : abs(pair[0] - (s+a)) < self.step, Q_value_pairs)
 				a_values = list(set(map(lambda pair : pair[1], theta_close)))
 				m = []
 				for a_val in a_values:
 					this_a = filter(lambda pair : pair[1] == a_val, theta_close)
 					m.append(np.mean(this_a))
-				M = max(m)
-				return (1-self.alpha)*self.Q_values[(s,a)] + self.alpha*[r_val + self.beta*M]
+				if len(m) == 0:
+					M = 0
+				else:
+					M = max(m)
+
+				return (1-self.alpha)*self.Q_values[(s,a)] + self.alpha*(r_val + self.beta*M)
 
 		def decrease_theta():
 			most_recent_s = self.s[-self.lamb:]
 			mean = np.mean(most_recent_s)
 			omegas = [0 for i in range(0, len(most_recent_s))]
 			for i in range(0, len(most_recent_s)):
-				if abs(most_recent_pms[i]-mean) <= self.step_history[i]:
+				if abs(most_recent_s[i]-mean) <= self.step_history[i]:
 					omegas[i] = 1
-			if sum(omegas) >= self.phi and omegas[-1] == 1 and ((self.s[-1] < mean and self.delta == 1) or (self.s[-1] >= mean and self.delta == -1)):
+			if sum(omegas) >= self.phi and omegas[-1] == 1 and ((self.s[-1] < mean and self.old_a > 0) or (self.s[-1] >= mean and self.old_a < 0)):
 				return True
 			return False
 
@@ -116,7 +120,7 @@ class QLearn:
 			for pm in self.s:
 				for aval in self.a:
 					if (pm, aval) not in self.v.keys():
-						L = filter(lambda pair : abs(pair[0] - (pm + aval)) < self.step, self.Q_values,keys())
+						L = filter(lambda pair : abs(pair[0] - (pm + aval)) < self.step, self.Q_values.keys())
 						if len(L) > 0:
 							self.Q_values[(pm, aval)] = np.mean(L)
 							self.v[(pm, aval)] = 1
@@ -158,11 +162,11 @@ class QLearn:
 			if ((self.old_s, self.step) in self.v.keys()) and ((self.old_s, -self.step) in self.v.keys()):
 				q1 = self.Q_values[(self.old_s, self.step)]
 				q2 = self.Q_values[(self.old_s, -self.step)]
-				if q1 > q_2:
+				if q1 > q2:
 					a = self.step
 				else:
 					a = -self.step
-			else if ((self.old_s, self.step) not in self.v.keys()) and ((self.old_s, -self.step) not in self.v.keys()):
+			elif ((self.old_s, self.step) not in self.v.keys()) and ((self.old_s, -self.step) not in self.v.keys()):
 				q1 = 0
 				q2 = 0
 				if (self.old_s, self.step*self.gamma) in self.v.keys():
