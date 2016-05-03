@@ -239,7 +239,7 @@ def main(args):
 
     # Choose the demands, capacities, and values for each agent
 	options.agent_demands = []
-	options.capacities = [20,27,20, 30, 25]
+	options.capacities = [5,8,6,3,7]
 	options.agent_values = []
 
 	for i in range(0, n):

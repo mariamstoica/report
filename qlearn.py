@@ -105,6 +105,7 @@ class QLearn:
 			for i in range(0, len(most_recent_s)):
 				if abs(most_recent_s[i]-mean) <= self.step_history[i]:
 					omegas[i] = 1
+
 			if sum(omegas) >= self.phi and omegas[-1] == 1 and ((self.s[-1] < mean and self.old_a > 0) or (self.s[-1] >= mean and self.old_a < 0)):
 				return True
 			return False
@@ -130,7 +131,7 @@ class QLearn:
 
 		if self.wait >= self.tau:
 			self.bidding_history = []
-			self.pm.append(min(0, self.pm - self.step))
+			self.s.append(min(0, self.pm - self.step))
 
 		elif len(self.bidding_history) >= self.rho and self.step > self.cutoff:
 			current_reward = compute_r(self.s[-2], self.s[-1]-self.s[-2], self.bidding_history)
@@ -177,7 +178,10 @@ class QLearn:
 				else:
 					a = -self.old_a
 
-			s = self.old_s + a
+			if self.old_s + a > 1:
+				s = 1
+			else:
+				s = self.old_s + a
 			self.old_r = current_reward
 			self.old_s = s
 			self.s.append(s)
