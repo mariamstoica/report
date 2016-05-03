@@ -4,7 +4,7 @@ import sys
 
 import numpy as np
 
-class Adaptive:
+class QLearn:
 	"""Truthful bidding"""
 	def __init__(self, id, values, demands):
 		self.id = id
@@ -16,7 +16,7 @@ class Adaptive:
 
 		# Descriptions of previous bids
 		self.bidding_history = []
-		self.lose = 0
+		self.wait = 0
 
 		# Parameters for the bidding strategy
 		self.tau = 3
