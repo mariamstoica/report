@@ -8,14 +8,14 @@ class History:
         Allows agents to access the history of a previous round.
         Makes copies so clients can't change history.
         """
-        def __init__(self, bids, payments):
+        def __init__(self, bids, payments, allocation):
             """Takes the info for a _single_ round."""
             self.bids = copy.deepcopy(bids)
             self.payments = copy.deepcopy(payments)
 
-    def __init__(self, bids, payments, n_agents=5):
+    def __init__(self, bids, payments, allocation, n_agents=5):
         self.round = lambda t: History.RoundHistory(
-            bids[t], payments[t])
+            bids[t], payments[t], allocation[t])
 
         self.last_round = lambda : max(bids.keys())
         self.n_agents = n_agents

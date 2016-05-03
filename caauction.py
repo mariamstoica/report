@@ -44,7 +44,7 @@ def sim(config):
     values = {}
     bids = {}
 
-    history = History(bids, payments, n)
+    history = History(bids, payments, allocation, n)
 
     def total_spent(agent_id, end):
         """
@@ -66,7 +66,7 @@ def sim(config):
 			bids[t] = [a.bid(t, history) for a in agents]
 
 		# Run the mechanism to determine allocation
-		allocation[t] = mechanism.compute(capacities, bids[t])
+		allocation[t] = mechanism.compute(config.capacities, bids[t])
 
 		# Find the payment for each agent
 		payments[t] = []
@@ -79,6 +79,7 @@ def sim(config):
 
 		values[t] = dict(zip(agent_ids, zeros))
 
+		""" THE VALUE NEEDS TO BE COMPUTED DIFFERENTLY - IT'S A FUNCTION """
 		def agent_value(agent_id, allocation, payments):
 			agent_allocation = filter(lambda b : b[0] == agent_id, allocation)
 			agent_value = 0
@@ -129,7 +130,7 @@ def init_agents(conf):
 
 #	This should look something like params = zip(range(n), value, demands)
     n = len(conf.agent_class_names)
-    params = zip(range(n), conf.agent_values)
+    params = zip(range(n), conf.agent_values, conf.agent_demands)
     def load(class_name, params):
         agent_class = conf.agent_classes[class_name]
         return agent_class(*params)
@@ -209,10 +210,6 @@ def main(args):
     options.agent_class_names = agents_to_run
     options.agent_classes = load_modules(options.agent_class_names)
 
-    # Need to have something here
-    options.demands = ?
-    options.capacities = ?
-
     logging.info("Starting simulation...")
     n = len(agents_to_run)
 
@@ -225,10 +222,17 @@ def main(args):
     logging.info("Time to Run the Simulation")
 
     total_rev = 0
+
+    # Choose the demands, capacities, and values for each agent
+    options.demands = [[2,3,2] for i in range(0, n)]
+    options.capacities = [6,9,6]
+    options.agent_values = []
+
+    for i in range(0, n):
+    	options.agent_values.append([random.randint(3,6), random.randint(5,8), random.randint(6,11)])
     
-    """ THIS IS WHERE WE HAVE A QUESTION - HOW DO WE REPRESENT INDIVIDUAL AGENT VALUES """
-    options.agent_values = list(vals)
-    values = dict(zip(range(n), list(vals)))
+    """ Decide the agent values """
+    values = dict(zip(range(n), options.agent_values))
     ##   Runs simulation  ###
     history = sim(options)
     ###  simulation ends.
@@ -242,3 +246,22 @@ def main(args):
     total_rev += stats.total_revenue()
 
     #total_revenues.append(total_rev / float(num_perms))
+
+    # Averages are over all the value permutations considered    
+    logging.info("%s\t\t%s\t\t%s" % ("#" * 15, "RESULTS", "#" * 15))
+    logging.info("")
+    for a in range(n):
+        logging.info("Stats for Agent %d, %s" % (a, agents_to_run[a]) )
+        logging.info("Average spend $%.2f" % (total_spent[a]/float(config.num_rounds)))   
+        logging.info("Average utility  $%.2f" % (totals[a]/float(config.num_rounds)))
+        logging.info("Total revenue $%.2f" % (total_rev))
+        logging.info("-" * 40)
+        logging.info("\n")
+#print "config", config.budget
+    
+    #for t in range(47, 48):
+    #for a in agents:
+        #print a,"'s added values is", av_value[a.id]
+        
+if __name__ == "__main__":
+    main(sys.argv)
